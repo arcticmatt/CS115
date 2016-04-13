@@ -1,0 +1,12 @@
+ - foldl max 0 [1, 5, 3, -2, 4]
+ - --> foldl max (max 0 1) [5, 3, -2, 4] [from definition]
+ - --> foldl max 1 [5, 3, -2, 4]
+ - --> foldl max (max 1 5) [3, -2, 4]
+ - --> foldl max 5 [3, -2, 4]
+ - --> foldl max (max 5 3) [-2, 4]
+ - --> foldl max 5 [-2, 4]
+ - --> foldl max (max 5 -2) [4]
+ - --> foldl max 5 [4]
+ - --> foldl max (max 5 4) []
+ - --> foldl max 5 []
+ - --> 5
