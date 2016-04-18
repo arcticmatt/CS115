@@ -41,7 +41,6 @@ map3 _ _ _ [] = []
 map3 f (x:xs) (y:ys) (z:zs) = f x y z : map3 f xs ys zs
 
 -- A.4.3
--- TODO: check this
 {-
   NOTE: map2_t = map2 (*)
   (sum .) . map2 (*)
@@ -108,8 +107,6 @@ largest (x:xs) = max x (largest xs)
 
 -- C.2
 {-
-  TODO: why does left to right matter here?
-  TODO: check this evaluation - zero or infinite?
   fact 3
   --> 3 * fact (3 - 1) [expand from definition]
   --> 3 * fact 2 [evaluate rightmost branch of * operator]
@@ -132,7 +129,6 @@ largest (x:xs) = max x (largest xs)
 
 -- C.3
 {-
-  TODO: time complexity explanation.
   reverse [1, 2, 3]
   --> iter [1, 2, 3] [] [expand from definition]
   --> iter [2, 3] (1 : [])
@@ -152,7 +148,6 @@ largest (x:xs) = max x (largest xs)
 
 -- C.4
 {-
-  TODO: does right-associative matter?
   reverse [1, 2, 3]
   --> reverse [2, 3] ++ [1] [from definition]
   --> (reverse [3] ++ [2]) ++ [1]
