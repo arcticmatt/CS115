@@ -29,24 +29,23 @@ rangeProduct2 a b | a > b = error "invalid range, lower bound greater than \
 
 -- A.4.1
 map2 :: (a -> b -> c) -> [a] -> [b] -> [c]
-map2 _ [] _ = []
-map2 _ _ [] = []
 map2 f (x:xs) (y:ys) = f x y : map2 f xs ys
+map2 _ _ _ = []
 
 -- A.4.2
 map3 :: (a -> b -> c -> d) -> [a] -> [b] -> [c] -> [d]
-map3 _ [] _ _ = []
-map3 _ _ [] _ = []
-map3 _ _ _ [] = []
 map3 f (x:xs) (y:ys) (z:zs) = f x y z : map3 f xs ys zs
+map3 _ _ _ _ = []
 
 -- A.4.3
 {-
   NOTE: map2_t = map2 (*)
-  (sum .) . map2 (*)
-  (sum .) . map2_t lst1 lst2
-  (sum .) (map2_t lst1) lst2
-  sum . (map2_t lst1) lst2
+  ((sum .) . map2 (*))
+  ((sum .) . map2_t) lst1 lst2
+  ((\x -> sum . x) . map2_t) lst1 lst2
+  ((\x -> sum . x) (map2_t lst1)) lst2
+  (sum . (map2_t lst1)) lst2 
+  (sum (map2_t lst1 lst2)) 
   sum (map2_t lst1 lst2) <==> sum (map2 (*) lst1 lst2)
 -}
 
@@ -57,13 +56,12 @@ nSum = sum [x | x <- [0..999], x `mod` 3 == 0 || x `mod` 5 == 0]
 -- A.6
 sieve :: [Integer] -> [Integer]
 sieve [] = []
-sieve (x:xs) | x == 1 = x : sieve xs
-             | otherwise = x : sieve (filter (\a -> a `mod` x /= 0) xs)
+sieve (x:xs) = x : sieve (filter (\a -> a `mod` x /= 0) xs)
 
-primes = sieve [1..]
+primes = sieve [2..]
 
 primeSum = sum (takeWhile (< 10000) primes)
--- primeSum = 5736397
+-- primeSum = 5736396
 
 -- ==================== Part B ====================
 
@@ -109,22 +107,18 @@ largest (x:xs) = max x (largest xs)
 {-
   fact 3
   --> 3 * fact (3 - 1) [expand from definition]
-  --> 3 * fact 2 [evaluate rightmost branch of * operator]
-  --> 3 * (2 * fact (2 - 1))
-  --> 3 * (2 * fact 1)
-  --> 3 * (2 * (1 * fact (1 - 1)))
-  --> 3 * (2 * (1 * fact 0))
-  --> 3 * (2 * (1 * (0 * fact (0 - 1)))) 
-  --> 3 * (2 * (1 * 0)) [left to right for multiplication]
-  --> 3 * (2 * 0)
-  --> 3 * 0
-  --> 0
+  --> 3 * ((3 - 1) * fact ((3 - 1) - 1))
+  --> 3 * (2 * fact ((3 - 1) - 1))
+  --> 3 * (2 * (((3 - 1) - 1) * fact(((3 - 1) - 1) - 1)))
+  --> 3 * (2 * ((2 - 1) * fact(((3 - 1) - 1) - 1)))
+  --> 3 * (2 * (1 * fact(((3 - 1) - 1) - 1)))
+  --> etc... doesn't terminate
  
-  The problem is that 0 gets pattern matched with the first definition for
-  fact (fact n) instead of the second definition for fact (fact 0). Thus,
-  a call to fact will never terminate, because the recursion has no base
-  case. To fix this, we can simply move the (fact 0) line above the (fact n)
-  line.
+  The problem is that the "fact n" line is first. This causes Haskell to 
+  pattern match any expression with "n". Thus, a call to fact will never 
+  terminate, because the recursive call always gets made and the base case 
+  never occurs. To fix this, we can simply move the "fact 0" line above the 
+  "fact n" line.
 -}
 
 -- C.3
@@ -135,8 +129,6 @@ largest (x:xs) = max x (largest xs)
   --> iter [3] (2 : (1 : []))
   --> iter [] (3 : (2 : (1 : [])))
   --> (3 : (2 : (1 : [])))
-  --> (3 : (2 : [1]))
-  --> (3 : [2, 1])
   --> [3, 2, 1]
  
   The asymptotic time complexity of this function is O(N), where N is the
@@ -182,13 +174,9 @@ largest (x:xs) = max x (largest xs)
   --> head (insert 3 (insert 1 (insert 2 (insert 5 (insert 4 [])))))
   --> head (insert 3 (insert 1 (insert 2 (insert 5 [4]))))
   --> head (insert 3 (insert 1 (insert 2 (4 : insert 5 []))))
-  --> head (insert 3 (insert 1 (insert 2 (4 : [5]))))
-  --> head (insert 3 (insert 1 (insert 2 [4, 5])))
-  --> head (insert 3 (insert 1 (2 : [4, 5])))
-  --> head (insert 3 (insert 1 [2, 4, 5]))
-  --> head (insert 3 (1 : [2, 4, 5]))
-  --> head (insert 3 [1, 2, 4, 5])
-  --> head (1 : insert 3 [2, 4, 5])
+  --> head (insert 3 (insert 1 (2 : 4 : insert 5 [])))
+  --> head (insert 3 (1 : 2 : 4 : insert 5 []))
+  --> head (1 : insert 3 (2 : 4 : insert 5 []))
   --> 1
 -}
 

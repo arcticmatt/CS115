@@ -40,7 +40,6 @@ rank Leaf = 0
 rank (Node _ r _ _) = r
 
 -- A.5
--- TODO: think about this. make cleaner?
 -- Merges two priority queues (represented as leftist heaps), returning a new 
 -- priority queue. The original priority queues are not altered.
 -- Here's the algo.
@@ -59,18 +58,18 @@ merge p@(Node _ _ _ _) Leaf = p
 merge p1@(Node v1 _ left1 right1) p2@(Node v2 _ left2 right2) 
         | v1 < v2 = let merged = (merge right1 p2)
                         leftRank = rank left1
-                        merge_rank = rank merged
+                        mergeRank = rank merged
                         in 
-                        if leftRank < merge_rank 
+                        if leftRank < mergeRank 
                             then (Node v1 (leftRank + 1) merged left1)
-                            else (Node v1 (merge_rank + 1) left1 merged)
+                            else (Node v1 (mergeRank + 1) left1 merged)
         | otherwise = let merged = (merge p1 right2)
                           leftRank = rank left2 
-                          merge_rank = rank merged 
+                          mergeRank = rank merged 
                           in 
-                          if leftRank < merge_rank 
+                          if leftRank < mergeRank 
                               then (Node v2 (leftRank + 1) merged left2)
-                              else (Node v2 (merge_rank + 1) left2 merged)
+                              else (Node v2 (mergeRank + 1) left2 merged)
                             
 -- A.6
 -- Insert an item into a priority queue.
