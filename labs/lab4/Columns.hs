@@ -39,18 +39,20 @@ main =
 -- space separated words, and returns them concatenated together in a space 
 -- separated string.
 getColumns :: [Integer] -> String -> String
-getColumns xs line = iter xs (zip [1..toInteger $ length $ words line] (words line)) []
+getColumns xs line = iter xs (words line) (toInteger $ length $ words line) []
     where 
-        -- Iterates through the list of column numbers and a list of 
-        -- (index, word) tuples. When column number == index, adds the corresponding
-        -- word to the result list. At the end, reverses the result list and
-        -- concatenates it.
-        iter :: [Integer] -> [(Integer, String)] -> [String] -> String 
-        iter _ [] ans = unwords $ reverse ans
-        iter [] _ ans = unwords $ reverse ans
-        iter cols@(x:xs) (y:ys) ans = if x == fst y then
-                                         iter xs ys (snd y : ans) else 
-                                         iter cols ys ans 
+        -- Takes in the list of column numbers, the list of space separated words,
+        -- the length of the list of words, and the result list (empty initially).
+        -- Iterates through the list of column numbers; for each column number,
+        -- if it is a valid index into the list of words, prepends the corresponding
+        -- word to the result list. At the end, reverses the list, concatenates the 
+        -- word, and returns the string.
+        iter :: [Integer] -> [String] -> Integer -> [String] -> String 
+        iter _ [] _ ans = unwords $ reverse ans
+        iter [] _ _ ans = unwords $ reverse ans
+        iter (x:xs) words hi ans = if x <= hi then 
+                                       iter xs words hi ((words !! fromInteger (x - 1)) : ans) else
+                                       iter xs words hi ans 
 
 -- Checks if a string corresponds to a positive integers. Tests this by 
 -- checking if all the characters of the string are digits, and also checking 
