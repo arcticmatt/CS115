@@ -1,1 +1,0 @@
-let m1 = SM { bounds = (2, 2), 
