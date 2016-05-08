@@ -13,24 +13,19 @@ import Data.Char
 --
 -- Seen above is a manual implementation of the putStrLn function. We will 
 -- desugar this into a function that does not use the do notation.
-
 myPutStrLn :: String -> IO ()
 myPutStrLn "" = putChar '\n'
 myPutStrLn (c:cs) = 
     putChar c >> myPutStrLn cs
 
 -- A.2 
--- TODO: is this what they want?
 -- greet :: String -> IO ()
 -- greet name = do putStrLn ("Hello, " ++ name ++ "!")
 --
--- We will simplify the code shown above as follows.
-
+-- the "do" is not necessary, because putStrLn already has type String -> IO ().
+-- Thus, we will simplify the code shown above as follows. 
 greet :: String -> IO ()
-greet name = 
-    do putStr "Hello, "
-       putStr name
-       putStrLn "!"
+greet name = putStrLn $ "Hello, " ++ name ++ "!"
 
 -- A.3
 -- Ask the user for his/her name, then print a greeting.
@@ -51,7 +46,6 @@ greet2 =
         putStr name >> 
         putStrLn "!"
 
--- TODO: look at pattern matching
 -- Now we will desugar this in the more complicated way (way 2). The complex
 -- desugaring does not behave differently because the pattern matching never 
 -- fails (the first pattern match binds to everything). If desired, we could 

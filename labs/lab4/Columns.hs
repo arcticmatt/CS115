@@ -4,7 +4,6 @@ import System.Exit
 import Data.Char
 
 -- Main module to run the program.
--- TODO: avoid code repeats?
 main :: IO ()
 main = 
     do 
@@ -13,27 +12,27 @@ main =
         if length args < 2 || length (filter isPositiveInteger args) /= (length args) - 1 then 
             -- Exit with failure if too few command lines arguments, or if 
             -- column inputs are invalid (non-numbers/ints, or non-positive ints.
-            putStr "usage: " >>
-            putStr progName >>
-            putStrLn " n1 n2 ... filename (n1, n2, etc. are positive integers)" >>
+            putStrLn ("usage: " ++ progName ++ " n1 n2 ... filename (n1, n2, etc. are positive integers)") >>
             exitFailure else 
             let columns = map (\x -> read x :: Integer) $ take ((length args) - 1) args 
                 fName = last args in
                 if fName /= "-" then 
                     do -- Read from filename
                         fContent <- readFile fName 
-                        let fLines = lines fContent 
-                            colLines = map (getColumns columns) fLines 
-                            colContents = unlines colLines in 
-                            putStr colContents >>
-                            exitSuccess else  
+                        printColumns fContent columns else
                     do -- Read from stdin
                         fContent <- getContents 
-                        let fLines = lines fContent 
-                            colLines = map (getColumns columns) fLines 
-                            colContents = unlines colLines in 
-                            putStr colContents >>
-                            exitSuccess
+                        printColumns fContent columns
+
+-- Given the file content as a String and a list of columns, print the 
+-- column contents.
+printColumns :: String -> [Integer] -> IO ()
+printColumns fContent columns =
+    let fLines = lines fContent 
+        colLines = map (getColumns columns) fLines 
+        colContents = unlines colLines in 
+        putStr colContents >>
+        exitSuccess
 
 -- Gets the "columns" from a single string, where columns here correspond to 
 -- space separated words, and returns them concatenated together in a space 
