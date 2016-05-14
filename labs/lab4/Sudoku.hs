@@ -63,20 +63,15 @@ solveSudoku s = iter s (1, 1)
     -- If the board is solveable, return True; if not, return False.
     -- In the latter case the board will not have changed.
      iter :: Sudoku -> (Int, Int) -> IO Bool
-     iter sBoard pos@(row, col) = 
+     iter sBoard pos = 
        do val <- readArray sBoard pos 
           if val == 0 -- If we're at an empty space, try to fill it.
             then do values <- getOKValues sBoard pos
                     iter' sBoard pos values
-            else if col == 9 -- Otherwise, advance to the next empty space.
-                   then let nextRow = row + 1
-                            nextCol = 1 
-                            in if nextRow > 9
-                                 then return True -- End of board, return true.
-                                 else iter sBoard (nextRow, nextCol)
-                   else let nextRow = row 
-                            nextCol = col + 1
-                            in iter sBoard (nextRow, nextCol)
+            else let (nextRow, nextCol) = getNextPos pos 
+                   in if nextRow > 9
+                        then return True -- End of board, return true.
+                        else iter sBoard (nextRow, nextCol)
 
     -- Try to solve the board using all possible currently-valid
     -- values at a particular location.
@@ -84,28 +79,29 @@ solveSudoku s = iter s (1, 1)
     -- (unmake the move) and return False.
      iter' :: Sudoku -> (Int, Int) -> [Int] -> IO Bool
      iter' _ _ [] = return False -- If no valid values, return false.
-     iter' sBoard pos@(row, col) (x:xs) = 
-      do
-        writeArray sBoard pos x -- Write a possible value to the board.
-        if col == 9 -- If we're at the end of a row, advance to the next row.
-          then let nextRow = row + 1
-                   nextCol = 1
-                   in if nextRow > 9
-                        then return True -- If we finish the board, return true.
-                        -- Try to solve with current move.
-                        else do solveable <- iter sBoard (nextRow, nextCol)
-                                if not solveable 
-                                  then do writeArray sBoard pos 0 -- Unmake the move.
-                                          iter' sBoard pos xs -- Redo current move.
-                                  else return solveable
-          else let nextRow = row -- Else, advance to the next column.
-                   nextCol = col + 1
-                   -- Try to solve with current move.
-                   in do solveable <- iter sBoard (nextRow, nextCol)
-                         if not solveable 
-                           then do writeArray sBoard pos 0 -- Unmake the move.
-                                   iter' sBoard pos xs -- Redo current move.
-                           else return solveable
+     iter' sBoard pos (x:xs) = 
+       do
+         writeArray sBoard pos x -- Write a possible value to the board.
+         let (nextRow, nextCol) = getNextPos pos
+           in if nextRow > 9
+                then return True -- If we finish the board, return true.
+                -- Try to solve with current move.
+                else do solveable <- iter sBoard (nextRow, nextCol)
+                        if not solveable 
+                          then do writeArray sBoard pos 0 -- Unmake the move.
+                                  iter' sBoard pos xs -- Redo current move.
+                          else return solveable
+
+    -- Given a position on the board, get the next position to be accessed.
+     getNextPos :: (Int, Int) -> (Int, Int)
+     getNextPos (row, col) = 
+       if col == 9 -- If we're at the end of a row, advance to the next row.
+         then let nextRow = row + 1
+                  nextCol = 1
+                  in (nextRow, nextCol)
+         else let nextRow = row -- Else, advance to the next column.
+                  nextCol = col + 1
+                  in (nextRow, nextCol)
                    
     -- Get a list of indices that could be in a particular location on the 
     -- board (no conflicts in row, column, or box).

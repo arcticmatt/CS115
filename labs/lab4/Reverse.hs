@@ -9,9 +9,7 @@ main =
         args <- getArgs         -- Get program arguments 
         if length args /= 1 then
             -- Exit with failure if too many or too few command-line arguments.
-            putStr "usage: " >>
-            putStr progName >>
-            putStrLn " filename" >>
+            putStrLn ("usage: " ++ progName ++ " filename") >>
             exitFailure else 
             -- Otherwise, print the contents of the file in reverse line order.
             do
