@@ -137,15 +137,20 @@ colsSM :: SparseMatrix a -> Integer
 colsSM (SM { bounds = (_, cols) }) = cols
 
 -- C.7
+-- Operator shortcut to add two sparse matrices.
 (<|+|>) :: (Eq a, Num a) => SparseMatrix a -> SparseMatrix a -> SparseMatrix a
 (<|+|>) = addSM
 
+-- Operator shortcut to subtract two sparse matrices.
 (<|-|>) :: (Eq a, Num a) => SparseMatrix a -> SparseMatrix a -> SparseMatrix a
 (<|-|>) = subSM
 
+-- Operator shortcut to multiply two sparse matrices.
 (<|*|>) :: (Eq a, Num a) => SparseMatrix a -> SparseMatrix a -> SparseMatrix a
 (<|*|>) = mulSM
 
+-- Operator shortcut to retrieve a value from a sparse matrix, given a 
+-- (row, col) pair.
 (<|!|>) :: Num a => SparseMatrix a -> (Integer, Integer) -> a
 (<|!|>) = getSM
 

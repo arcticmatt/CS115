@@ -299,4 +299,26 @@ factorial n | n < 0     = error "factorial has a negative argument"
 -- 4 +# 2
 -- 1
 -- Thus, it is evident that infix associativity is needed in order to 
--- consistently garner the correct results.
+-- "smartly" parenthesize the expression.
+--
+-- Note, however, that even infix associativy does not guarantee that this 
+-- operator will always act as desired. Consider the following example:
+-- 2 +# 700 +# 333 
+-- The sensible result for this operation would be 4; this number would be 
+-- obtained by adding all the numbers together (to get 1035), and then taking
+-- the number of digits of the sum. However, by parenthesizing this 
+-- expression, we get different results. Let's see how this looks:
+-- (2 +# 700) +# 333
+-- 3 +# 333
+-- 3
+-- or
+-- 2 +# (700 +# 333)
+-- 2 +# 4
+-- 1
+-- Either way we parenthesize this expression leads to an undesired result. 
+-- That is, even if we give the +# operator infix associativity, correct results 
+-- are not always guaranteed. 
+--
+-- Thus, we can conclude that, given its unreliable behavior, this operator 
+-- should not necessarily even BE an operator. However, if one does decide to make
+-- it an operator, infix associativity is the way to go.
